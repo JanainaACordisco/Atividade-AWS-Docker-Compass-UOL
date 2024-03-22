@@ -32,5 +32,37 @@ Este repositório tem como objetivo documentar as etapas da atividade de AWS - D
     - Em VPC endpoints selecione "None".
     - Manter as demais configurações como padrão.
 - Clique em "Create VPC".
-### Preview
+#### Preview
 <img src=mapa-vpc.PNG>
+
+### Configuração dos Security Groups:
+- Criar os grupos de segurança e portas de entrada seguindo a configuração abaixo:
+
+    - Bastion Host:
+        | Type | Protocol | Port Range | Source |
+        |:----:|:--------:|:----------:|:------:|
+        | SSH  | TCP      | 22         | My IP  |
+        | HTTP | TCP      | 80         | My IP  |
+    
+    - Load Balancer:
+        | Type | Protocol | Port Range |   Source  |
+        |:----:|:--------:|:----------:|:---------:|
+        | HTTP | TCP      | 80         | 0.0.0.0/0 |
+
+    - EC2 Web Server:
+        | Type | Protocol | Port Range |       Source       |
+        |:----:|:--------:|:----------:|:------------------:|
+        |  SSH |    TCP   |     22     | SG - Load Balancer |
+        | HTTP |    TCP   |     80     |  SG - Bastion Host |   
+
+    - RDS:
+        |     Type     | Protocol | Port Range |        Source       |
+        |:------------:|:--------:|:----------:|:-------------------:|
+        | MYSQL/Aurora |    TCP   |    3306    |  SG - Load Balancer |
+        | MYSQL/Aurora |    TCP   |    3306    | SG - EC2 Web Server |
+
+    - EFS:
+        | Type | Protocol | Port Range |        Source       |
+        |:----:|:--------:|:----------:|:-------------------:|
+        | NFS  | TCP      | 2049       | SG - Bastion Host   |
+        | NFS  | TCP      | 2049       | SG - EC2 Web Server |
