@@ -1,5 +1,5 @@
 ## Atividade AWS - Docker  do PB AWS e DevSecOps Compass UOL
-Este repositório tem como objetivo documentar as etapas da atividade de AWS - Docker do programa de bolsas da Compass UOL.
+Este repositório tem como objetivo documentar as etapas que realizei para a  execução da atividade de AWS - Docker do programa de bolsas da Compass UOL.
 
 ### Requisitos da atividade:
     - Instalação e configuração do DOCKER ou CONTAINERD no host EC2;
@@ -22,14 +22,14 @@ Este repositório tem como objetivo documentar as etapas da atividade de AWS - D
 
 ### Configuração da Network:
 - Acessei o console AWS e entrei no serviço VPC.
-- No menu lateral esquerdo, na seção de "Virtual private cloud", selecionei "Your VPCs".
-- Dentro de Your VPCs, cliquei no botão "Create VPC".
+- No menu lateral esquerdo, na seção de *Virtual private cloud*, selecionei "Your VPCs".
+- Dentro de *Your VPCs*, cliquei no botão "Create VPC".
 - Alterei as seguintes configurações:
-    - Em Resources to create selecionei "VPC and more".
-    - Em Name tag auto-generation coloquei o nome "docker-vpc".
-    - Em Number of Availability Zones (AZs) selecionei "2".
-    - Em NAT gateways selecionei "In 1 AZ".
-    - Em VPC endpoints selecionei "None".
+    - Em *Resources to create* selecionei "VPC and more".
+    - Em *Name tag auto-generation* coloquei o nome "docker-vpc".
+    - Em *Number of Availability Zones (AZs)* selecionei "2".
+    - Em *NAT gateways* selecionei "In 1 AZ".
+    - Em *VPC endpoints* selecionei "None".
     - Mantive as demais configurações como padrão.
 - Cliquei em "Create VPC".
 #### Preview
@@ -67,26 +67,38 @@ Este repositório tem como objetivo documentar as etapas da atividade de AWS - D
         | NFS  | TCP      | 2049       | SG - Bastion Host   |
         | NFS  | TCP      | 2049       | SG - EC2 Web Server |
 
-### Criar Elastic File System:
+### Criando o Elastic File System:
 - Acessei o console AWS e entrei no serviço de EFS.
 - No menu lateral direito, cliquei no botão "Create File System".
-- Depois cliquei no botão "Customize".   
+- Depois cliquei no botão "Customize".
+- Executei a seguinte configuração: 
 
     - #### Step 1 - File system settings
         - Coloquei o nome "EFS Docker" para o EFS.
-        - Verifiquei na configuração de File system type se o tipo selecionado está "Regional".
+        - Verifiquei na configuração de *File system type* se o tipo selecionado está "Regional".
         - Mantive as demais configurações como padrão.
         - Cliquei em "Next".
 
         - #### Step 2 - Network access:
-        - No campo "Virtual Private Cloud (VPC)" selecionei a VPC que foi criada anteriormente.
-        - No campo "Subnet ID" selecionei as subnets privadas de cada AZ.
-        - No campo "Security groups" selecionei o grupo de segurança que foi criado para o EFS anteriormente.
+        - No campo *Virtual Private Cloud (VPC)* selecionei a VPC que foi criada anteriormente.
+        - No campo *Subnet ID* selecionei as subnets privadas de cada AZ.
+        - No campo *Security groups* selecionei o grupo de segurança que foi criado para o EFS anteriormente.
         - Cliquei em "Next".
 
     - #### Step 3 - optional - File system policy:
         - Deixei tudo como padrão.
         - Cliquei em "Next".
         
-    - #### Step - Review and create:
+    - #### Step 4 - Review and create:
         - Revisei e cliquei em "Create" para finalizar.
+
+### Criando o RDS:
+- Acessei o console AWS e entrei no serviço de RDS.
+- No tela de *Dashboard* cliquei no botão "Create database".
+- Executei a seguinte configuração:
+    - Na seção *Engine options* selecionei "MySQL".
+    - Na seção *Templates* selecionei "Free tier".
+    - Na seção *Credentials Settings* adicionei uma *Master password* e confirmei.
+    - Na seção *Conectivity*, no campo *Virtual private cloud* selecionei a VPC criada anteriormente e no campo *Existing VCP security groups* selecionei o SG que foi criado previamente para o serviço de RDS.
+    - Na seção *Additional configuration*, no campo *Initial database name* coloquei o nome "dockerdb".
+- Revisei e cliquei em "Create database" para finalizar.
