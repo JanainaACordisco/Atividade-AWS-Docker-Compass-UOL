@@ -21,22 +21,22 @@ Este repositório tem como objetivo documentar as etapas da atividade de AWS - D
 ## Instruções de execução
 
 ### Configuração da Network:
-- Acesse o console AWS e entre no serviço VPC.
-- No menu lateral esquerdo, na seção de "Virtual private cloud", selecione "Your VPCs".
-- Dentro de Your VPCs, clique no botão "Create VPC".
-- Altere as seguintes configurações:
-    - Em Resources to create selecione "VPC and more".
-    - Em Name tag auto-generation coloque o nome de sua escolha.
-    - Em Number of Availability Zones (AZs) selecione "2".
-    - Em NAT gateways selecione "In 1 AZ".
-    - Em VPC endpoints selecione "None".
-    - Manter as demais configurações como padrão.
-- Clique em "Create VPC".
+- Acessei o console AWS e entrei no serviço VPC.
+- No menu lateral esquerdo, na seção de "Virtual private cloud", selecionei "Your VPCs".
+- Dentro de Your VPCs, cliquei no botão "Create VPC".
+- Alterei as seguintes configurações:
+    - Em Resources to create selecionei "VPC and more".
+    - Em Name tag auto-generation coloquei o nome "docker-vpc".
+    - Em Number of Availability Zones (AZs) selecionei "2".
+    - Em NAT gateways selecionei "In 1 AZ".
+    - Em VPC endpoints selecionei "None".
+    - Mantive as demais configurações como padrão.
+- Cliquei em "Create VPC".
 #### Preview
 <img src=mapa-vpc.PNG>
 
 ### Configuração dos Security Groups:
-- Criar os grupos de segurança e portas de entrada seguindo a configuração abaixo:
+- Criei os grupos de segurança usando a VPC criada anteriormente e adicionei as portas de entrada conforme a configuração abaixo:
 
     - Bastion Host:
         | Type | Protocol | Port Range | Source |
@@ -66,3 +66,27 @@ Este repositório tem como objetivo documentar as etapas da atividade de AWS - D
         |:----:|:--------:|:----------:|:-------------------:|
         | NFS  | TCP      | 2049       | SG - Bastion Host   |
         | NFS  | TCP      | 2049       | SG - EC2 Web Server |
+
+### Criar Elastic File System:
+- Acessei o console AWS e entrei no serviço de EFS.
+- No menu lateral direito, cliquei no botão "Create File System".
+- Depois cliquei no botão "Customize".   
+
+    - #### Step 1 - File system settings
+        - Coloquei o nome "EFS Docker" para o EFS.
+        - Verifiquei na configuração de File system type se o tipo selecionado está "Regional".
+        - Mantive as demais configurações como padrão.
+        - Cliquei em "Next".
+
+        - #### Step 2 - Network access:
+        - No campo "Virtual Private Cloud (VPC)" selecionei a VPC que foi criada anteriormente.
+        - No campo "Subnet ID" selecionei as subnets privadas de cada AZ.
+        - No campo "Security groups" selecionei o grupo de segurança que foi criado para o EFS anteriormente.
+        - Cliquei em "Next".
+
+    - #### Step 3 - optional - File system policy:
+        - Deixei tudo como padrão.
+        - Cliquei em "Next".
+        
+    - #### Step - Review and create:
+        - Revisei e cliquei em "Create" para finalizar.
