@@ -30,13 +30,15 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
     - Em Number of Availability Zones (AZs) selecionei *2*.
     - Em NAT gateways selecionei *In 1 AZ*.
     - Em VPC endpoints selecionei *None*.
-    - Mantive as demais configurações como padrão.
 - Cliquei em *Create VPC*.
 #### Preview
 <img src=mapa-vpc.PNG>
 
 ### Configuração dos Security Groups:
-- Criei os security groups usando a VPC criada anteriormente e configurei da seguinte forma:
+- Acessei o console AWS e entrei no serviço EC2.
+- No menu lateral esquerdo, na seção de Network & Security, selecionei *Security Groups*.
+- Dentro de Security Groups, cliquei no botão *Create security group*.
+- Criei e configurei os seguintes security groups usando a VPC criada anteriormente:
 
     - #### Load Balancer - Inbound rules
         | Type | Protocol | Port Range |   Source  |
@@ -66,13 +68,12 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 
 ### Criando o Elastic File System:
 - Acessei o console AWS e entrei no serviço de EFS.
-- No menu lateral direito, cliquei no botão *Create File System*.
+- No tela do Elastic File System cliquei no botão *Create file system*.
 - Depois cliquei no botão *Customize*.
 - Executei a seguinte configuração: 
 
     - #### Step 1 - File system settings
         - Coloquei o nome "efs-docker" para o EFS.
-        - Mantive as demais configurações como padrão.
         - Cliquei em *Next*.
 
     - #### Step 2 - Network access:
@@ -82,7 +83,6 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
         - Cliquei em *Next*.
 
     - #### Step 3 - optional - File system policy:
-        - Deixei tudo como padrão.
         - Cliquei em *Next*.
         
     - #### Step 4 - Review and create:
@@ -105,11 +105,12 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 - No menu lateral esquerdo, na seção de Load Balancing, selecionei *Load Balancers*.
 - Dentro de Load Balancers, cliquei no botão *Create load balancer*.
 - Em Load balancer types cliquei em *Classic Load Balancer* e depois em *Create*.
-- No campo Load balancer name escrevi "ws-lb".
+- No campo Load balancer name escrevi "ws-clb".
 - Na seção Network mapping, no campo VPC selecionei a VPC criada anteriormente nessa atividade.
 - No campo Mappings selecionei as duas AZ's e suas respectivas subnets públicas.
 - No campo de Security groups selecionei o SG feito anteriormente para o serviço de Load Balancer.
 - Na seção Health checks, no campo VPC selecionei a Ping path adicionei o caminho "/wp-admin/install.php"
+- Cliquei em *Create load balancer* para finalizar.
 
 ### Gerando a Key pairs:
 - Acessei o console AWS e entrei no serviço EC2.
@@ -118,16 +119,17 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 - Coloquei o nome "MinhaChaveSSH", selecionei o tipo de par de chaves como *RSA* e o formato da chave privada como *.pem* e então cliquei no botão *Create key pair*.
 - Salvei o arquivo .pem.
 
-### Criando o Launch Template :
-- Acessei o console AWS e na seção Instances cliquei no botão *Launch Templates*.
-- Na tela de Launch Templates cliquei no botão *Create launch template*.
+### Criando o Launch Template:
+- Acessei o console AWS e entrei no serviço EC2.
+- No menu lateral esquerdo, na seção Instances, selecionei *Launch Templates*.
+- Dentro de Launch Templates cliquei no botão *Create launch template*.
 - No campo Launch template name coloquei o nome de "ws-lt".
 - No campo Template version description escrevi "docker-wordpress"
 - Em Application and OS Images cliquei em *Quick Start*, depois cliquei em *Amazon Linux* e selecionei a *Amazon Linux 2023 AMI*.
 - Na seção Instance type selecionei o tipo *t3.small*.
 - No campo Key pair name selecionei a key pair criada anteriormente.
 - Em Network settings, no campo Security groups selecionei o grupo *EC2 Web Server* que foi criado anteriormente.
-- Em Resource tags, cliquei em *Add new tag* e adicionei as tags de Key: "Name", "Project" e "CostCenter" (com seus respectivos *Value*) para os Resource types *Instances e Volumes*.
+- Em Resource tags, cliquei em *Add new tag* e adicionei as tags de Key: "Name", "CostCenter" e "Project" (com seus respectivos *Value*) para os Resource types *Instances e Volumes*.
 - Em Advanced details, no campo User data adicionei o script abaixo:
     ```
     #!/bin/bash
@@ -166,7 +168,7 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
     sudo cat <<EOL > /efs/docker-compose.yaml
     version: '3.8'
     services:
-    wordpress:
+      wordpress:
         image: wordpress:latest
         container_name: wordpress
         ports:
