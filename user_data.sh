@@ -41,9 +41,9 @@ services:
       - "80:80"
     environment:
       WORDPRESS_DB_HOST: RDS-ENDPOINT
-      WORDPRESS_DB_USER: RDS Master user
-      WORDPRESS_DB_PASSWORD: RDS Master user password
-      WORDPRESS_DB_NAME: RDS Initial name
+      WORDPRESS_DB_USER: RDS Master username
+      WORDPRESS_DB_PASSWORD: RDS Master password
+      WORDPRESS_DB_NAME: RDS Initial database name
       WORDPRESS_TABLE_CONFIG: wp_
     volumes:
       - /efs/wordpress:/var/www/html
