@@ -1,5 +1,5 @@
-## Atividade AWS - Docker  do PB AWS e DevSecOps Compass UOL
-Este repositório tem como objetivo documentar as etapas que realizei para a  execução da atividade de AWS - Docker do programa de bolsas da Compass UOL.
+## Atividade AWS - Docker - DevSecOps Compass UOL
+Este repositório tem como objetivo documentar as etapas que realizei para a  execução da atividade de AWS - Docker do Programa de Bolsas AWS e DevSecOps - Compass UOL.
 
 ### Requisitos da atividade:
 - Instalação e configuração do DOCKER ou CONTAINERD no host EC2;
@@ -48,8 +48,8 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
     - #### EC2 Web Server - Inbound rules
         | Type | Protocol | Port Range |       Source       |
         |:----:|:--------:|:----------:|:------------------:|
-        |  SSH |    TCP   |     22     |    SG - EC2 ICE    |
-        | HTTP |    TCP   |     80     | SG - Load Balancer |
+        |  SSH |    TCP   |     22     |      EC2 ICE       |
+        | HTTP |    TCP   |     80     |    Load Balancer   |
 
     - #### EC2 ICE - Outbound rules
         | Type | Protocol | Port Range |       Source       |
@@ -148,9 +148,8 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
     sudo usermod -aG docker ec2-user
 
     #Instalação do docker-compose
-    sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
-    sudo mv /usr/local/bin/docker-compose /usr/bin/docker-compose
+    sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+    sudo chmod +x /usr/bin/docker-compose
 
     #Instalar, iniciar e configurar a inicialização automática do nfs-utils
     sudo yum install nfs-utils -y
@@ -213,6 +212,9 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
         - No campo **Desired capacity** digitei "2".
         - Em **Scaling**, no campo **Min desired capacity** digitei "2".
         - No campo **Max desired capacity** digitei "4".
+        - Em **Automatic scaling** selecionei a opção **Target tracking scaling policy**
+        - No campo **Metric type** deixei selecionado **Average CPU utilization**.
+        - No campo **Target value** digitei "75".
         - Cliquei em **Next**.
     - #### Steps 5, 6 e 7:
         - Cliquei em **Next**.
@@ -230,3 +232,56 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
     - Em **Security groups** selecionei o grupo "EC2 ICE" que foi criado anteriormente.
     - Em **Subnet** selecionei uma subnet privada que foi criada anteriormente.
 - Cliquei em **Create endpoint**.
+
+
+### Instalando o WordPress:
+- Acessei o **DNS name** do Load Balancer através do navegador.
+- Na tela de instalação do WordPress, mantive o idioma padrão e cliquei em **Continue**.
+- Na tela seguinte preenchi os dados para criação de um usuário.
+- Cliquei em **Install WordPress** para finalizar.
+
+### Testando os serviços:
+1. Acessando a página do WordPress via Load Balancer:
+    - Coloquei o DNS name do Load Balancer através do navegador para acessar a página do WordPress.
+
+2. Acessando a instância via EC2 Instance Connect Endpoint:
+    - Configurei as credenciais da conta AWS no terminal do PowerShell.
+    - Utilizei o comando abaixo para visualizar os ID's das instâncias que estão em execução:
+        ```
+        aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" | Select-String "InstanceId"
+        ```
+    -  Copiei o ID de uma delas.
+    - Usei o comando a seguir para fazer o acesso ssh a instância passando o valor do ID:
+        ```
+         aws ec2-instance-connect ssh --instance-id <instance-id>
+        ```
+3. Testando a montagem do EFS:
+    - Utilizei o comando `df -h` para verificar se o EFS está montado.
+    - Utilizei o comando `cat /etc/fstab` para verificar se a montagem persistente está configurada.
+4. Testando o docker e docker-compose:
+    - Utilizei o comando `docker ps` para verificar se o container "wordpress" está executando.
+    - Utilizei o comando abaixo para verificar se o docker-compose está funcionando:
+        ```
+        docker-compose -f /efs/docker-compose.yaml ps
+        ```
+5. Acessando o banco de dados da aplicação WordPress:
+    - Copiar o ID do container "wordpress".
+    - Para acessar o container executei o comando abaixo passando o ID do container:
+        ```
+        docker exec -it <container-id> /bin/bash
+        ``` 
+    - Dentro do container utilizei o comando `apt-get update` para atualizar a lista de pacotes dos repositórios do container.
+    - Utilizei o comando abaixo para instalar o client mysql.
+        ```
+        apt-get install default-mysql-client -y
+        ```
+    - Para acessar o MySQL executei o comando abaixo passando o endpoint, porta e usuário do RDS:
+        ```
+        mysql -h <RDS-endpoint> -P 3306 -u <Master username> -p
+        ```
+    - Digitei a senha do usuário.
+    - Utilizei o comando `show databases;` para listar os bancos de dados disponíveis.
+    - Utilizei o comando `use dockerdb` para selecionar o banco de dados "dockerdb".
+    - Utilizei o comando `show tables;` para listar todas as tabelas criadas dentro do banco de dados "dockerdb".
+
+## Referências:
