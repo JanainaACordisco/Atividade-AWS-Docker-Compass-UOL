@@ -4,25 +4,25 @@ sudo yum update -y
 
 #Instalar, iniciar e configurar a inicialização automática do docker
 sudo yum install docker -y 
-sudo systemctl start docker.service
-sudo systemctl enable docker.service
+sudo systemctl start docker
+sudo systemctl enable docker
 
 #Adicionar o usuário ec2-user ao grupo docker
 sudo usermod -aG docker ec2-user
 
 #Instalação do docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
-sudo chmod +x /usr/bin/docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 
 #Instalar, iniciar e configurar a inicialização automática do nfs-utils
 sudo yum install nfs-utils -y
-sudo systemctl start nfs-utils.service
-sudo systemctl enable nfs-utils.service
+sudo systemctl start nfs-utils
+sudo systemctl enable nfs-utils
 
 #Criar a pasta onde o EFS vai ser montado
 sudo mkdir -p /efs
 
-#Montagem e configuração da montagem automática do EFS
+#Montagem e configuração da montagem persistente do EFS
 sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ID-EFS:/ efs
 sudo echo "ID-EFS:/ /efs nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev 0 0" >> /etc/fstab
 
@@ -49,4 +49,4 @@ services:
 EOL
 
 # Inicializar o WordPress com Docker Compose
-sudo docker-compose -f /efs/docker-compose.yaml up -d
+docker-compose -f /efs/docker-compose.yaml up -d
