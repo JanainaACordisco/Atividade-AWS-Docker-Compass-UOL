@@ -26,10 +26,10 @@ sudo mkdir -p /efs
 sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ID-EFS:/ efs
 sudo echo "ID-EFS:/ /efs nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev 0 0" >> /etc/fstab
 
-# Cria uma pasta para os arquivos do WordPress
+# Criar uma pasta para os arquivos do WordPress
 sudo mkdir -p /efs/wordpress
 
-# Cria um arquivo docker-compose.yml para configurar o WordPress
+# Criar um arquivo docker-compose.yml para configurar o WordPress
 sudo cat <<EOL > /efs/docker-compose.yaml
 version: '3.8'
 services:
@@ -48,5 +48,5 @@ services:
       - /efs/wordpress:/var/www/html
 EOL
 
-# Inicializar o WordPress com Docker Compose
+# Inicializar o WordPress com docker-compose
 docker-compose -f /efs/docker-compose.yaml up -d

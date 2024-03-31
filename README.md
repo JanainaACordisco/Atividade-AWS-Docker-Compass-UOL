@@ -3,14 +3,14 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 
 ### Requisitos da atividade:
 - Instalação e configuração do DOCKER ou CONTAINERD no host EC2;
-- Ponto adicional para o trabalho utilizar a instalação via script de Start Instance (user_data.sh).
+- Ponto adicional para o trabalho: Utilizar a instalação via script de Start Instance (user_data.sh).
 - Efetuar Deploy de uma aplicação Wordpress com container de aplicação RDS database Mysql.
 - Configuração da utilização do serviço EFS AWS para estáticos do container de aplicação Wordpress.
 - Configuração do serviço de Load Balancer AWS para a aplicação Wordpress.
 
 ### Pontos de atenção:
 - Não utilizar ip público para saída do serviços WP (Evitem publicar o serviço WP via IP Público).
-- Sugestão para o tráfego de internet sair pelo LB (Load Balancer Classic).
+- Sugestão para o tráfego: Internet sair pelo LB (Load Balancer Classic).
 - Pastas públicas e estáticos do Wordpress sugestão de utilizar o EFS (Elastic File Sistem).
 - Fica a critério de cada integrante usar Dockerfile ou Dockercompose.
 - Necessário demonstrar a aplicação Wordpress funcionando (tela de login).
@@ -22,14 +22,14 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 
 ### Configuração da Network:
 - Acessei o console AWS e entrei no serviço **VPC**.
-- No menu lateral esquerdo, na seção de **Virtual private cloud**, selecionei **Your VPCs**.
-- Dentro de **Your VPCs**, cliquei no botão **Create VPC**.
+- No menu lateral esquerdo, na seção de **Virtual private cloud** selecionei **Your VPCs**.
+- Dentro de **Your VPCs** cliquei no botão **Create VPC**.
 - Alterei as seguintes configurações:
     - Em **Resources to create** selecionei **VPC and more**.
     - Em **Name tag auto-generation** coloquei o nome "docker-vpc".
-    - Em **Number of Availability Zones (AZs)** selecionei 2.
-    - Em **NAT gateways** selecionei In 1 AZ.
-    - Em **VPC endpoints** selecionei None.
+    - Em **Number of Availability Zones (AZs)** selecionei **2**.
+    - Em **NAT gateways** selecionei **In 1 AZ**.
+    - Em **VPC endpoints** selecionei **None**.
 - Cliquei em **Create VPC**.
 #### Preview
 <img src=mapa-vpc.PNG>
@@ -90,11 +90,11 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 
 ### Criando o Relational Database Service:
 - Acessei o console AWS e entrei no serviço de **RDS**.
-- No tela de **Dashboard** cliquei no botão **Create database**.
+- Na tela **Dashboard** cliquei no botão **Create database**.
 - Executei a seguinte configuração:
-    - Na seção **Engine options** selecionei MySQL.
-    - Na seção **Templates selecionei** Free tier.
-    - Na seção **Credentials Settings** adicionei uma **Master password** e confirmei.
+    - Na seção **Engine options** selecionei **MySQL**.
+    - Na seção **Templates** selecionei **Free tier**.
+    - Na seção **Credentials Settings** adicionei uma *Master password* e confirmei.
     - Na seção **Conectivity**, no campo **Virtual private cloud** selecionei a VPC criada anteriormente.
     - No campo **Existing VPC security groups** selecionei o grupo "RDS" que foi criado anteriormente.
     - Na seção **Additional configuration**, no campo **Initial database** name coloquei o nome "dockerdb".
@@ -102,37 +102,37 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 
 ### Criando o Classic Load Balancer:
 - Acessei o console AWS e entrei no serviço **EC2**.
-- No menu lateral esquerdo, na seção de **Load Balancing**, selecionei **Load Balancers**.
-- Dentro de **Load Balancers**, cliquei no botão **Create load balancer**.
+- No menu lateral esquerdo, na seção de **Load Balancing** selecionei **Load Balancers**.
+- Dentro de **Load Balancers** cliquei no botão **Create load balancer**.
 - Em **Load balancer types** cliquei em **Classic Load Balancer** e depois em **Create**.
 - No campo **Load balancer name** digitei "ws-clb".
 - Na seção **Network mapping**, no campo **VPC** selecionei a VPC criada anteriormente.
 - No campo **Mappings** selecionei as duas AZ's e suas respectivas subnets públicas.
 - No campo de **Security groups** selecionei o grupo "Load Balancer" que foi criado anteriormente.
-- Na seção **Health checks**, no campo **Ping path** adicionei o caminho "/wp-admin/install.php"
+- Na seção **Health checks**, no campo **Ping path** adicionei o caminho "/wp-admin/install.php".
 - Cliquei em **Create load balancer** para finalizar.
 
-### Gerando a Key pairs:
+### Gerando a Key pair:
 - Acessei o console AWS e entrei no serviço **EC2**.
-- No menu lateral esquerdo, na seção de **Network & Security**, selecionei **Key pairs**.
-- Dentro de **Key pairs**, cliquei no botão **Create key pair**.
+- No menu lateral esquerdo, na seção de **Network & Security** selecionei **Key pairs**.
+- Dentro de **Key pairs** cliquei no botão **Create key pair**.
 - No campo **Name** digitei "MinhaChaveSSH". 
-- No campo **Key pair type** selecionei **RSA** 
+- No campo **Key pair type** selecionei **RSA**.
 - No campo **Private key file format** selecionei **.pem**.
 - Cliquei no botão **Create key pair**.
 - Salvei o arquivo .pem.
 
 ### Criando o Launch Template:
 - Acessei o console AWS e entrei no serviço **EC2**.
-- No menu lateral esquerdo, na seção **Instances**, selecionei **Launch Templates**.
+- No menu lateral esquerdo, na seção **Instances** selecionei **Launch Templates**.
 - Dentro de **Launch Templates** cliquei no botão **Create launch template**.
 - No campo **Launch template name** digitei "ws-lt".
-- No campo **Template version description** digitei "docker-wordpress"
+- No campo **Template version description** digitei "docker-wordpress".
 - Em **Application and OS Images** cliquei em **Quick Start**, depois cliquei em **Amazon Linux** e selecionei a Amazon Linux 2023 AMI.
 - Na seção **Instance type** selecionei o tipo t3.small.
 - No campo **Key pair name** selecionei a key pair criada anteriormente.
 - Em **Network settings**, no campo **Security groups** selecionei o grupo "EC2 Web Server" que foi criado anteriormente.
-- Em **Resource tags**, cliquei em **Add new tag** e adicionei as tags de **Key** "Name", "CostCenter" e "Project" para os **Resource types** Instances e Volumes.
+- Em **Resource tags** cliquei em **Add new tag** e adicionei as tags de **Key** "Name", "CostCenter" e "Project" para os **Resource types** Instances e Volumes.
 - Em **Advanced details**, no campo **User data** adicionei o script abaixo:
     ```
     #!/bin/bash
@@ -141,20 +141,20 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 
     #Instalar, iniciar e configurar a inicialização automática do docker
     sudo yum install docker -y 
-    sudo systemctl start docker.service
-    sudo systemctl enable docker.service
+    sudo systemctl start docker
+    sudo systemctl enable docker
     
     #Adicionar o usuário ec2-user ao grupo docker
     sudo usermod -aG docker ec2-user
 
     #Instalação do docker-compose
-    sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
-    sudo chmod +x /usr/bin/docker-compose
+    sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
 
     #Instalar, iniciar e configurar a inicialização automática do nfs-utils
     sudo yum install nfs-utils -y
-    sudo systemctl start nfs-utils.service
-    sudo systemctl enable nfs-utils.service
+    sudo systemctl start nfs-utils
+    sudo systemctl enable nfs-utils
 
     #Criar a pasta onde o EFS vai ser montado
     sudo mkdir -p /efs
@@ -163,10 +163,10 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
     sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ID-EFS:/ efs
     sudo echo "ID-EFS:/ /efs nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev 0 0" >> /etc/fstab
 
-    # Cria uma pasta para os arquivos do WordPress
+    # Criar uma pasta para os arquivos do WordPress
     sudo mkdir -p /efs/wordpress
 
-    # Cria um arquivo docker-compose.yml para configurar o WordPress
+    # Criar um arquivo docker-compose.yml para configurar o WordPress
     sudo cat <<EOL > /efs/docker-compose.yaml
     version: '3.8'
     services:
@@ -185,15 +185,15 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
           - /efs/wordpress:/var/www/html
     EOL
 
-    # Inicializar o WordPress com Docker Compose
-    sudo docker-compose -f /efs/docker-compose.yaml up -d
+    # Inicializar o WordPress com docker-compose
+    docker-compose -f /efs/docker-compose.yaml up -d
     ```
-- Cliquei em *Create launch template* para finalizar.
+- Cliquei em **Create launch template** para finalizar.
 
 ### Criando o Auto Scaling Groups:
 - Acessei o console AWS e entrei no serviço **EC2**.
-- No menu lateral esquerdo, na seção de **Auto Scaling**, selecionei **Auto Scaling Groups**.
-- Dentro de **Auto Scaling groups**, cliquei no botão **Create Auto Scaling group**.
+- No menu lateral esquerdo, na seção de **Auto Scaling** selecionei **Auto Scaling Groups**.
+- Dentro de **Auto Scaling groups** cliquei no botão **Create Auto Scaling group**.
 - Executei a seguinte configuração:
     - #### Step 1 - Choose launch template:
         - No campo **Auto Scaling group name** digitei "ws-asg".
@@ -223,8 +223,8 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 
 ### Configuração do EC2 Instance Connect Endpoint:
 - Acessei o console AWS e entrei no serviço **VPC**.
-- No menu lateral esquerdo, na seção de **Virtual private cloud**, selecionei **Endpoints**.
-- Dentro de **Endpoints**, cliquei no botão **Create endpoint**.
+- No menu lateral esquerdo, na seção de **Virtual private cloud** selecionei **Endpoints**.
+- Dentro de **Endpoints** cliquei no botão **Create endpoint**.
 - Alterei as seguintes configurações:
     - Em **Name tag** coloquei o nome "ws-ep".
     - Em **Service category** selecionei **EC2 Instance Connect Endpoint**.
@@ -235,53 +235,65 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 
 
 ### Instalando o WordPress:
-- Acessei o **DNS name** do Load Balancer através do navegador.
-- Na tela de instalação do WordPress, mantive o idioma padrão e cliquei em **Continue**.
+- Acessei o **DNS name** do **Load Balancer** através do navegador.
+- Na tela de instalação do **WordPress**, mantive o idioma padrão e cliquei em **Continue**.
 - Na tela seguinte preenchi os dados para criação de um usuário.
 - Cliquei em **Install WordPress** para finalizar.
 
 ### Testando os serviços:
 1. Acessando a página do WordPress via Load Balancer:
-    - Coloquei o DNS name do Load Balancer através do navegador para acessar a página do WordPress.
+    - Coloquei o **DNS name** do **Load Balancer** através do navegador para acessar a página do **WordPress**.
 
 2. Acessando a instância via EC2 Instance Connect Endpoint:
-    - Configurei as credenciais da conta AWS no terminal do PowerShell.
+    - Configurei as credenciais da conta AWS no terminal do **PowerShell**.
     - Utilizei o comando abaixo para visualizar os ID's das instâncias que estão em execução:
         ```
         aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" | Select-String "InstanceId"
         ```
     -  Copiei o ID de uma delas.
-    - Usei o comando a seguir para fazer o acesso ssh a instância passando o valor do ID:
+    - Usei o comando a seguir para fazer o acesso **SSH** na instância passando o valor do ID:
         ```
          aws ec2-instance-connect ssh --instance-id <instance-id>
         ```
 3. Testando a montagem do EFS:
-    - Utilizei o comando `df -h` para verificar se o EFS está montado.
-    - Utilizei o comando `cat /etc/fstab` para verificar se a montagem persistente está configurada.
+    - Utilizei o comando `df -h` para verificar se o **EFS** está montado.
+    - Utilizei o comando `cat /etc/fstab` para verificar se a **montagem persistente** está configurada.
 4. Testando o docker e docker-compose:
-    - Utilizei o comando `docker ps` para verificar se o container "wordpress" está executando.
-    - Utilizei o comando abaixo para verificar se o docker-compose está funcionando:
+    - Utilizei o comando `docker ps` para verificar se o container **wordpress** está executando.
+    - Utilizei o comando abaixo para verificar se o **docker-compose** está funcionando:
         ```
         docker-compose -f /efs/docker-compose.yaml ps
         ```
 5. Acessando o banco de dados da aplicação WordPress:
-    - Copiar o ID do container "wordpress".
+    - Copiar o ID do container **wordpress**.
     - Para acessar o container executei o comando abaixo passando o ID do container:
         ```
         docker exec -it <container-id> /bin/bash
         ``` 
     - Dentro do container utilizei o comando `apt-get update` para atualizar a lista de pacotes dos repositórios do container.
-    - Utilizei o comando abaixo para instalar o client mysql.
+    - Utilizei o comando abaixo para instalar o **client mysql**.
         ```
         apt-get install default-mysql-client -y
         ```
-    - Para acessar o MySQL executei o comando abaixo passando o endpoint, porta e usuário do RDS:
+    - Para acessar o **MySQL** executei o comando abaixo passando o endpoint, porta e usuário do **RDS**:
         ```
         mysql -h <RDS-endpoint> -P 3306 -u <Master username> -p
         ```
     - Digitei a senha do usuário.
     - Utilizei o comando `show databases;` para listar os bancos de dados disponíveis.
-    - Utilizei o comando `use dockerdb` para selecionar o banco de dados "dockerdb".
-    - Utilizei o comando `show tables;` para listar todas as tabelas criadas dentro do banco de dados "dockerdb".
+    - Utilizei o comando `use dockerdb` para selecionar o banco de dados **dockerdb**.
+    - Utilizei o comando `show tables;` para listar todas as tabelas criadas dentro do banco de dados **dockerdb**.
 
 ## Referências:
+
+
+- [Criar uma instância de banco de dados do Amazon RDS](https://docs.aws.amazon.com/pt_br/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html)
+- [Criar um Classic Load Balancer com um listener HTTPS](https://docs.aws.amazon.com/pt_br/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html)
+- [Instalação do Docker - Linux](https://docs.aws.amazon.com/pt_br/serverless-application-model/latest/developerguide/install-docker.html#install-docker-instructions)
+- [Install Compose standalone](https://docs.docker.com/compose/install/standalone/)
+- [WordPress - How to use this image](https://hub.docker.com/_/wordpress)
+- [Criar um modelo de execução para um grupo do Auto Scaling](https://docs.aws.amazon.com/pt_br/autoscaling/ec2/userguide/create-launch-template.html)
+- [Criar um grupo do Auto Scaling usando um modelo de execução](https://docs.aws.amazon.com/pt_br/autoscaling/ec2/userguide/create-asg-launch-template.html)
+- [Usar o EC2 Instance Connect para se conectar à sua instância do Linux com a AWS CLI](https://docs.aws.amazon.com/pt_br/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#connect-linux-inst-eic-cli-ssh)
+- [Conexão a uma instância de banco de dados executando o mecanismo de banco de dados do MySQL](https://docs.aws.amazon.com/pt_br/AmazonRDS/latest/UserGuide/USER_ConnectToInstance.html)
+- [Comandos básicos do MySQL no terminal](https://www.diegobrocanelli.com.br/mysql/comandos-basicos-mysql-no-terminal/)
