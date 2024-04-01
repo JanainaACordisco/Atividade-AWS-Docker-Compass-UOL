@@ -2,19 +2,19 @@
 Este repositório tem como objetivo documentar as etapas que realizei para a  execução da atividade de AWS - Docker do Programa de Bolsas AWS e DevSecOps - Compass UOL.
 
 ### Requisitos da atividade:
-- Instalação e configuração do DOCKER ou CONTAINERD no host EC2;
+- Instalação e configuração do DOCKER ou CONTAINERD no host EC2.
 - Ponto adicional para o trabalho: Utilizar a instalação via script de Start Instance (user_data.sh).
-- Efetuar Deploy de uma aplicação Wordpress com container de aplicação RDS database Mysql.
-- Configuração da utilização do serviço EFS AWS para estáticos do container de aplicação Wordpress.
-- Configuração do serviço de Load Balancer AWS para a aplicação Wordpress.
+- Efetuar deploy de uma aplicação WordPress com container de aplicação RDS database MySQL.
+- Configuração da utilização do serviço EFS AWS para estáticos do container de aplicação WordPress.
+- Configuração do serviço de Load Balancer AWS para a aplicação WordPress.
 
 ### Pontos de atenção:
-- Não utilizar ip público para saída do serviços WP (Evitem publicar o serviço WP via IP Público).
+- Não utilizar IP público para saída do serviços WordPress (Evitem publicar o serviço WordPress via IP público).
 - Sugestão para o tráfego: Internet sair pelo LB (Load Balancer Classic).
-- Pastas públicas e estáticos do Wordpress sugestão de utilizar o EFS (Elastic File Sistem).
-- Fica a critério de cada integrante usar Dockerfile ou Dockercompose.
-- Necessário demonstrar a aplicação Wordpress funcionando (tela de login).
-- Aplicação Wordpress precisa estar rodando na porta 80 ou 8080.
+- Pastas públicas e estáticos do WordPress sugestão de utilizar o EFS (Elastic File Sistem).
+- Fica a critério de cada integrante usar Dockerfile ou Docker Compose.
+- Necessário demonstrar a aplicação WordPress funcionando (tela de login).
+- Aplicação WordPress precisa estar rodando na porta 80 ou 8080.
 - Utilizar repositório git para versionamento.
 - Criar documentação.
 
@@ -54,17 +54,17 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
     - #### EC2 ICE - Outbound rules
         | Type | Protocol | Port Range |       Source       |
         |:----:|:--------:|:----------:|:------------------:|
-        |  SSH |    TCP   |     22     | SG - EC2 Web Server|
+        |  SSH |    TCP   |     22     |    EC2 Web Server  |
 
     - #### RDS - Inbound rules
         |     Type     | Protocol | Port Range |        Source       |
         |:------------:|:--------:|:----------:|:-------------------:|
-        | MYSQL/Aurora |    TCP   |    3306    | SG - EC2 Web Server |
+        | MYSQL/Aurora |    TCP   |    3306    |    EC2 Web Server   |
 
     - #### EFS - Inbound rules
         | Type | Protocol | Port Range |        Source       |
         |:----:|:--------:|:----------:|:-------------------:|
-        | NFS  | TCP      | 2049       | SG - EC2 Web Server |
+        | NFS  | TCP      | 2049       |    EC2 Web Server   |
 
 ### Criando o Elastic File System:
 - Acessei o console AWS e entrei no serviço de **EFS**.
@@ -97,7 +97,7 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
     - Na seção **Credentials Settings** adicionei uma *Master password* e confirmei.
     - Na seção **Conectivity**, no campo **Virtual private cloud** selecionei a VPC criada anteriormente.
     - No campo **Existing VPC security groups** selecionei o grupo "RDS" que foi criado anteriormente.
-    - Na seção **Additional configuration**, no campo **Initial database** name coloquei o nome "dockerdb".
+    - Na seção **Additional configuration**, no campo **Initial database name** coloquei o nome "dockerdb".
 - Revisei e cliquei em **Create database** para finalizar.
 
 ### Criando o Classic Load Balancer:
@@ -166,7 +166,7 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
     # Criar uma pasta para os arquivos do WordPress
     sudo mkdir -p /efs/wordpress
 
-    # Criar um arquivo docker-compose.yml para configurar o WordPress
+    # Criar um arquivo docker-compose.yaml para configurar o WordPress
     sudo cat <<EOL > /efs/docker-compose.yaml
     version: '3.8'
     services:
@@ -176,10 +176,10 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
         ports:
           - "80:80"
         environment:
-          WORDPRESS_DB_HOST: RDS-ENDPOINT
-          WORDPRESS_DB_USER: RDS Master username
-          WORDPRESS_DB_PASSWORD: RDS Master password
-          WORDPRESS_DB_NAME: RDS Initial database name
+          WORDPRESS_DB_HOST: RDS-Endpoint
+          WORDPRESS_DB_USER: RDS-Master username
+          WORDPRESS_DB_PASSWORD: RDS-Master password
+          WORDPRESS_DB_NAME: RDS-Initial database name
           WORDPRESS_TABLE_CONFIG: wp_
         volumes:
           - /efs/wordpress:/var/www/html
@@ -236,35 +236,35 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 
 ### Instalando o WordPress:
 - Acessei o **DNS name** do **Load Balancer** através do navegador.
-- Na tela de instalação do **WordPress**, mantive o idioma padrão e cliquei em **Continue**.
+- Na tela de instalação do **WordPress** mantive o idioma padrão e cliquei em **Continue**.
 - Na tela seguinte preenchi os dados para criação de um usuário.
 - Cliquei em **Install WordPress** para finalizar.
 
 ### Testando os serviços:
-1. Acessando a página do WordPress via Load Balancer:
+- Acessando a página do WordPress via Load Balancer:
     - Coloquei o **DNS name** do **Load Balancer** através do navegador para acessar a página do **WordPress**.
 
-2. Acessando a instância via EC2 Instance Connect Endpoint:
+- Acessando a instância via EC2 Instance Connect Endpoint:
     - Configurei as credenciais da conta AWS no terminal do **PowerShell**.
     - Utilizei o comando abaixo para visualizar os ID's das instâncias que estão em execução:
         ```
         aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" | Select-String "InstanceId"
         ```
     -  Copiei o ID de uma delas.
-    - Usei o comando a seguir para fazer o acesso **SSH** na instância passando o valor do ID:
+    - Usei o comando a seguir para fazer o acesso **SSH** na instância via EC2 Instance Connect Endpoint passando o ID da instância:
         ```
          aws ec2-instance-connect ssh --instance-id <instance-id>
         ```
-3. Testando a montagem do EFS:
+- Testando a montagem do EFS:
     - Utilizei o comando `df -h` para verificar se o **EFS** está montado.
     - Utilizei o comando `cat /etc/fstab` para verificar se a **montagem persistente** está configurada.
-4. Testando o docker e docker-compose:
+- Testando o docker e docker-compose:
     - Utilizei o comando `docker ps` para verificar se o container **wordpress** está executando.
     - Utilizei o comando abaixo para verificar se o **docker-compose** está funcionando:
         ```
         docker-compose -f /efs/docker-compose.yaml ps
         ```
-5. Acessando o banco de dados da aplicação WordPress:
+- Acessando o banco de dados da aplicação WordPress:
     - Copiar o ID do container **wordpress**.
     - Para acessar o container executei o comando abaixo passando o ID do container:
         ```
@@ -285,7 +285,6 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
     - Utilizei o comando `show tables;` para listar todas as tabelas criadas dentro do banco de dados **dockerdb**.
 
 ## Referências:
-
 
 - [Criar uma instância de banco de dados do Amazon RDS](https://docs.aws.amazon.com/pt_br/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html)
 - [Criar um Classic Load Balancer com um listener HTTPS](https://docs.aws.amazon.com/pt_br/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html)

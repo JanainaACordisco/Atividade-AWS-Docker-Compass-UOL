@@ -20,16 +20,16 @@ sudo systemctl start nfs-utils
 sudo systemctl enable nfs-utils
 
 #Criar a pasta onde o EFS vai ser montado
-sudo mkdir -p /efs
+sudo mkdir /efs
 
 #Montagem e configuração da montagem persistente do EFS
 sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ID-EFS:/ efs
 sudo echo "ID-EFS:/ /efs nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev 0 0" >> /etc/fstab
 
 # Criar uma pasta para os arquivos do WordPress
-sudo mkdir -p /efs/wordpress
+sudo mkdir /efs/wordpress
 
-# Criar um arquivo docker-compose.yml para configurar o WordPress
+# Criar um arquivo docker-compose.yaml para configurar o WordPress
 sudo cat <<EOL > /efs/docker-compose.yaml
 version: '3.8'
 services:
@@ -39,10 +39,10 @@ services:
     ports:
       - "80:80"
     environment:
-      WORDPRESS_DB_HOST: RDS-ENDPOINT
-      WORDPRESS_DB_USER: RDS Master username
-      WORDPRESS_DB_PASSWORD: RDS Master password
-      WORDPRESS_DB_NAME: RDS Initial database name
+      WORDPRESS_DB_HOST: RDS-Endpoint
+      WORDPRESS_DB_USER: RDS-Master username
+      WORDPRESS_DB_PASSWORD: RDS-Master password
+      WORDPRESS_DB_NAME: RDS-Initial database name
       WORDPRESS_TABLE_CONFIG: wp_
     volumes:
       - /efs/wordpress:/var/www/html
