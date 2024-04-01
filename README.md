@@ -157,14 +157,14 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
     sudo systemctl enable nfs-utils
 
     #Criar a pasta onde o EFS vai ser montado
-    sudo mkdir -p /efs
+    sudo mkdir /efs
 
     #Montagem e configuração da montagem automática do EFS
     sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ID-EFS:/ efs
     sudo echo "ID-EFS:/ /efs nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev 0 0" >> /etc/fstab
 
     # Criar uma pasta para os arquivos do WordPress
-    sudo mkdir -p /efs/wordpress
+    sudo mkdir /efs/wordpress
 
     # Criar um arquivo docker-compose.yaml para configurar o WordPress
     sudo cat <<EOL > /efs/docker-compose.yaml
