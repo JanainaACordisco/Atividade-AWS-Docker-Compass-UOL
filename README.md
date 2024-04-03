@@ -1,5 +1,5 @@
 ## Atividade AWS - Docker - DevSecOps Compass UOL
-Este repositório tem como objetivo documentar as etapas que realizei para a  execução da atividade de AWS - Docker do Programa de Bolsas AWS e DevSecOps - Compass UOL.
+Este repositório tem como objetivo documentar as etapas que realizei para a execução da atividade de AWS - Docker do Programa de Bolsas AWS e DevSecOps - Compass UOL.
 
 ### Requisitos da atividade:
 - Instalação e configuração do DOCKER ou CONTAINERD no host EC2.
@@ -9,9 +9,9 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 - Configuração do serviço de Load Balancer AWS para a aplicação WordPress.
 
 ### Pontos de atenção:
-- Não utilizar IP público para saída do serviços WordPress (Evitem publicar o serviço WordPress via IP público).
+- Não utilizar IP público para saída dos serviços WordPress (Evitem publicar o serviço WordPress via IP público).
 - Sugestão para o tráfego: Internet sair pelo LB (Load Balancer Classic).
-- Pastas públicas e estáticos do WordPress sugestão de utilizar o EFS (Elastic File Sistem).
+- Pastas públicas e estáticos do WordPress sugestão de utilizar o EFS (Elastic File System).
 - Fica a critério de cada integrante usar Dockerfile ou Docker Compose.
 - Necessário demonstrar a aplicação WordPress funcionando (tela de login).
 - Aplicação WordPress precisa estar rodando na porta 80 ou 8080.
@@ -68,11 +68,11 @@ Este repositório tem como objetivo documentar as etapas que realizei para a  ex
 
 ### Criando o Elastic File System:
 - Acessei o console AWS e entrei no serviço de **EFS**.
-- No tela do **Elastic File System** cliquei no botão **Create file system**.
+- Na tela do **Elastic File System** cliquei no botão **Create file system**.
 - Depois cliquei no botão **Customize**.
 - Executei a seguinte configuração: 
 
-    - #### Step 1 - File system settings
+    - #### Step 1 - File system settings:
         - No campo **Name** digitei "efs-docker".
         - Cliquei em **Next**.
 
